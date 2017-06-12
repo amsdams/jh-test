@@ -1,0 +1,63 @@
+entity Owner0
+{
+name String
+}
+entity Car0 {
+name String
+}
+
+
+relationship OneToMany {
+  Owner0{car0} to Car0{owner0}
+}
+
+entity Owner1{
+name String
+}
+entity Car1{
+name String
+}
+
+relationship ManyToOne {
+  Car1{owner1} to Owner1
+}
+
+entity Owner2{
+name String
+}
+entity Car2{
+name String
+}
+
+relationship OneToMany {
+  Owner2{ownedCar2} to Car2{owner2}
+}
+
+relationship OneToMany {
+  Owner2{drivedCar2} to Car2{driver2}
+}
+
+entity Owner3{
+name String
+}
+entity Car3{
+name String
+}
+
+relationship ManyToMany {
+  Car3{owner3} to Owner3{car3}
+}
+
+entity Owner4{
+name String
+}
+entity Car4{
+name String
+}
+
+relationship OneToOne {
+  Owner4{car4} to Car4
+}
+
+
+

@@ -1,0 +1,29 @@
+
+<div>
+    <h2><span>Owner 5</span> {{vm.owner5.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="dl-horizontal jh-entity-details">
+        <dt><span>Name</span></dt>
+        <dd>
+            <span>{{vm.owner5.name}}</span>
+        </dd>
+        <dt><span>Car 5</span></dt>
+        <dd>
+            <span ng-repeat="car5 in vm.owner5.car5S">
+                <a ui-sref="car-5-detail({id: car5.id})">{{car5.name}}</a>{{$last ? '' : ', '}}
+            </span>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            ui-sref="{{ vm.previousState }}"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button" ui-sref="owner-5-detail.edit({id:vm.owner5.id})" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span class="hidden-sm-down"> Edit</span>
+    </button>
+</div>

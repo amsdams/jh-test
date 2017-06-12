@@ -1,0 +1,28 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "owner2",
+            "otherEntityName": "owner2",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "driver2",
+            "otherEntityName": "owner2",
+            "otherEntityField": "id"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20170612184656",
+    "entityTableName": "car_2",
+    "dto": "no",
+    "pagination": "infinite-scroll",
+    "service": "no"
+}

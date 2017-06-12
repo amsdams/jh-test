@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <include file="classpath:config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184651_added_entity_Owner0.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184652_added_entity_Car0.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184653_added_entity_Owner1.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184654_added_entity_Car1.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184655_added_entity_Owner2.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184656_added_entity_Car2.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184657_added_entity_Owner3.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184658_added_entity_Car3.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184659_added_entity_Owner4.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184700_added_entity_Car4.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184701_added_entity_Owner5.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184702_added_entity_Car5.xml" relativeToChangelogFile="false"/>
+    <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
+    <include file="classpath:config/liquibase/changelog/20170612184652_added_entity_constraints_Car0.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184654_added_entity_constraints_Car1.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184656_added_entity_constraints_Car2.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184658_added_entity_constraints_Car3.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184659_added_entity_constraints_Owner4.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184701_added_entity_constraints_Owner5.xml" relativeToChangelogFile="false"/>
+    <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
+</databaseChangeLog>

@@ -1,0 +1,39 @@
+entity Owner0
+
+entity Car0
+
+relationship OneToMany {
+  Owner0{car0} to Car0{owner0}
+}
+
+entity Owner1
+entity Car1
+
+relationship ManyToOne {
+  Car1{owner1} to Owner1
+}
+
+entity Owner2
+entity Car2
+
+relationship OneToMany {
+  Owner2{ownedCar2} to Car2{owner2}
+}
+
+relationship OneToMany {
+  Owner2{drivedCar2} to Car2{driver2}
+}
+
+entity Owner3
+entity Car3
+
+relationship ManyToMany {
+  Car3{owner3} to Owner3{car3}
+}
+
+entity Owner4
+entity Car4
+
+relationship OneToOne {
+  Owner4{car4} to Car4
+}

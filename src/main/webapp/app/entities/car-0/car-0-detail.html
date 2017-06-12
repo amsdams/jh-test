@@ -1,0 +1,27 @@
+
+<div>
+    <h2><span>Car 0</span> {{vm.car0.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="dl-horizontal jh-entity-details">
+        <dt><span>Name</span></dt>
+        <dd>
+            <span>{{vm.car0.name}}</span>
+        </dd>
+        <dt><span>Owner 0</span></dt>
+        <dd>
+            <a ui-sref="owner-0-detail({id:vm.car0.owner0.id})">{{vm.car0.owner0.id}}</a>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            ui-sref="{{ vm.previousState }}"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button" ui-sref="car-0-detail.edit({id:vm.car0.id})" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span class="hidden-sm-down"> Edit</span>
+    </button>
+</div>

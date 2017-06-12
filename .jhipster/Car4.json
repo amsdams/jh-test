@@ -1,0 +1,15 @@
+{
+    "fluentMethods": true,
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20170612184700",
+    "entityTableName": "car_4",
+    "dto": "no",
+    "pagination": "infinite-scroll",
+    "service": "no"
+}

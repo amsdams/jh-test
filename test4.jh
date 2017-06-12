@@ -1,0 +1,79 @@
+entity Owner0
+{
+name String
+}
+entity Car0 {
+name String
+}
+paginate Owner0, Car0 with infinite-scroll
+
+
+relationship OneToMany {
+  Owner0{car0} to Car0{owner0}
+}
+
+entity Owner1{
+name String
+}
+entity Car1{
+name String
+}
+paginate Owner1, Car1 with infinite-scroll
+
+relationship ManyToOne {
+  Car1{owner1} to Owner1
+}
+
+entity Owner2{
+name String
+}
+entity Car2{
+name String
+}
+paginate Owner2, Car2 with infinite-scroll
+
+relationship OneToMany {
+  Owner2{ownedCar2} to Car2{owner2}
+}
+
+relationship OneToMany {
+  Owner2{drivedCar2} to Car2{driver2}
+}
+
+entity Owner3{
+name String
+}
+entity Car3{
+name String
+}
+paginate Owner3, Car3 with infinite-scroll
+
+relationship ManyToMany {
+  Car3{owner3} to Owner3{car3}
+}
+
+
+
+entity Owner4{
+name String
+}
+entity Car4{
+name String
+}
+paginate Owner4, Car4 with infinite-scroll
+
+relationship OneToOne {
+  Owner4{car4} to Car4
+}
+
+entity Owner5{
+name String
+}
+entity Car5{
+name String
+}
+paginate Owner5, Car5 with infinite-scroll
+
+relationship ManyToMany {
+  Owner5{car5} to Car5{owner5} 
+}

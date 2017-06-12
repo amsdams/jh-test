@@ -1,0 +1,23 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "many-to-many",
+            "relationshipName": "car3",
+            "otherEntityName": "car3",
+            "ownerSide": false,
+            "otherEntityRelationshipName": "owner3"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20170612184657",
+    "entityTableName": "owner_3",
+    "dto": "no",
+    "pagination": "infinite-scroll",
+    "service": "no"
+}

@@ -1,0 +1,22 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "car0",
+            "otherEntityName": "car0",
+            "otherEntityRelationshipName": "owner0"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20170612184651",
+    "entityTableName": "owner_0",
+    "dto": "no",
+    "pagination": "infinite-scroll",
+    "service": "no"
+}
