@@ -1,80 +1,84 @@
+/* Owner (1) <-----> (*) Car*/
 entity Owner0
 {
-name String
+	name String
 }
 entity Car0 {
-name String
+	name String
 }
 paginate Owner0, Car0 with infinite-scroll
 
 
 relationship OneToMany {
-  Owner0{car0(name)} to Car0{owner0}
+	Owner0{car0(name)} to Car0{owner0}
 }
+/*Owner (1) <----- (*) Car*/
 
 entity Owner1{
-name String
+	name String
 }
 entity Car1{
-name String
+	name String
 }
 paginate Owner1, Car1 with infinite-scroll
 
 relationship ManyToOne {
-  Car1{owner1} to Owner1
+	Car1{owner1(name)} to Owner1
 }
-
+/* Owner2 (1) <---owns-----> (*) Car2
+Owner2 (1) <---drives---> (*) Car2
+ */
 entity Owner2{
-name String
+	name String
 }
 entity Car2{
-name String
+	name String
 }
 paginate Owner2, Car2 with infinite-scroll
 
 relationship OneToMany {
-  Owner2{ownedCar2} to Car2{owner2}
+	Owner2{ownedCar2(name)} to Car2{owner2}
 }
 
 relationship OneToMany {
-  Owner2{drivedCar2} to Car2{driver2}
+	Owner2{drivedCar2} to Car2{driver2}
 }
 
 entity Owner3{
-name String
+	name String
 }
 entity Car3{
-name String
+	name String
 }
 paginate Owner3, Car3 with infinite-scroll
 
 relationship ManyToMany {
-  Car3{owner3(name)} to Owner3{car3}
+	Car3{owner3(name)} to Owner3{car3}
 }
 
 
 
 entity Owner4{
-name String
+	name String
 }
 entity Car4{
-name String
+	name String
 }
 paginate Owner4, Car4 with infinite-scroll
 
 relationship OneToOne {
-  Owner4{car4} to Car4
+	Owner4{car4} to Car4
 }
 
 entity Owner5{
-name String
+	name String
 }
 entity Car5{
-name String
+	name String
 }
 paginate Owner5, Car5 with infinite-scroll
 
 relationship ManyToMany {
-  Owner5{car5(name)} to Car5{owner5} 
+	Owner5{car5(name)} to Car5{owner5} 
 }
 
