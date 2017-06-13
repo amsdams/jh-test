@@ -11,7 +11,7 @@
         $stateProvider
         .state('car-1', {
             parent: 'entity',
-            url: '/car-1',
+            url: '/car-1?page&sort&search',
             data: {
                 authorities: ['ROLE_USER'],
                 pageTitle: 'Car1S'
@@ -23,7 +23,27 @@
                     controllerAs: 'vm'
                 }
             },
+            params: {
+                page: {
+                    value: '1',
+                    squash: true
+                },
+                sort: {
+                    value: 'id,asc',
+                    squash: true
+                },
+                search: null
+            },
             resolve: {
+                pagingParams: ['$stateParams', 'PaginationUtil', function ($stateParams, PaginationUtil) {
+                    return {
+                        page: PaginationUtil.parsePage($stateParams.page),
+                        sort: $stateParams.sort,
+                        predicate: PaginationUtil.parsePredicate($stateParams.sort),
+                        ascending: PaginationUtil.parseAscending($stateParams.sort),
+                        search: $stateParams.search
+                    };
+                }]
             }
         })
         .state('car-1-detail', {
@@ -96,6 +116,7 @@
                         entity: function () {
                             return {
                                 name: null,
+                                description: null,
                                 id: null
                             };
                         }

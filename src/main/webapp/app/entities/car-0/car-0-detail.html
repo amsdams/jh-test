@@ -8,9 +8,13 @@
         <dd>
             <span>{{vm.car0.name}}</span>
         </dd>
+        <dt><span>Description</span></dt>
+        <dd>
+            <span>{{vm.car0.description}}</span>
+        </dd>
         <dt><span>Owner 0</span></dt>
         <dd>
-            <a ui-sref="owner-0-detail({id:vm.car0.owner0.id})">{{vm.car0.owner0.id}}</a>
+            <a ui-sref="owner-0-detail({id:vm.car0.owner0Id})">{{vm.car0.owner0Id}}</a>
         </dd>
     </dl>
 

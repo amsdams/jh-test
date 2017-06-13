@@ -1,0 +1,93 @@
+/* Owner (1) <-----> (*) Car*/
+entity Owner0
+{
+	name String 
+	description String maxlength(2000)
+}
+entity Car0 {
+	name String
+    description String maxlength(2000)
+}
+
+
+relationship OneToMany {
+	Owner0{car0(name)} to Car0{owner0}
+}
+/*Owner (1) <----- (*) Car*/
+
+entity Owner1{
+	name String
+    description String maxlength(2000)
+}
+entity Car1{
+	name String
+    description String maxlength(2000)
+}
+
+relationship ManyToOne {
+	Car1{owner1(name)} to Owner1
+}
+/* Owner2 (1) <---owns-----> (*) Car2 */
+/*Owner2 (1) <---drives---> (*) Car2 */
+
+entity Owner2{
+	name String
+    description String maxlength(2000)
+}
+entity Car2{
+	name String
+    description String maxlength(2000)
+}
+
+relationship OneToMany {
+	Owner2{ownedCar2(name)} to Car2{owner2}
+}
+
+relationship OneToMany {
+	Owner2{drivedCar2} to Car2{driver2}
+}
+
+entity Owner3{
+	name String
+    description String maxlength(2000)
+}
+entity Car3{
+	name String
+    description String maxlength(2000)
+}
+
+relationship ManyToMany {
+	Car3{owner3(name)} to Owner3{car3}
+}
+
+
+
+entity Owner4{
+	name String
+    description String maxlength(2000)
+}
+entity Car4{
+	name String
+    description String maxlength(2000)
+}
+
+relationship OneToOne {
+	Owner4{car4} to Car4
+}
+
+entity Owner5{
+	name String
+    description String maxlength(2000)
+}
+entity Car5{
+	name String
+    description String maxlength(2000)
+}
+
+relationship ManyToMany {
+	Owner5{car5(name)} to Car5{owner5} 
+}
+
+dto * with mapstruct
+service * with serviceImpl
+paginate * with pager

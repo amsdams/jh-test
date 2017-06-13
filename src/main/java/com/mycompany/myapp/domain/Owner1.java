@@ -1,13 +1,16 @@
 package com.mycompany.myapp.domain;
 
+import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * A Owner1.
+ * Owner (1) <----- (*) Car
  */
+@ApiModel(description = "Owner (1) <----- (*) Car")
 @Entity
 @Table(name = "owner_1")
 public class Owner1 implements Serializable {
@@ -21,6 +24,10 @@ public class Owner1 implements Serializable {
 
     @Column(name = "name")
     private String name;
+
+    @Size(max = 2000)
+    @Column(name = "description", length = 2000)
+    private String description;
 
     public Long getId() {
         return id;
@@ -41,6 +48,19 @@ public class Owner1 implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Owner1 description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
@@ -68,6 +88,7 @@ public class Owner1 implements Serializable {
         return "Owner1{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
+            ", description='" + getDescription() + "'" +
             "}";
     }
 }

@@ -5,28 +5,23 @@
         .module('testApp')
         .controller('Car2Controller', Car2Controller);
 
-    Car2Controller.$inject = ['Car2', 'ParseLinks', 'AlertService', 'paginationConstants'];
+    Car2Controller.$inject = ['$state', 'Car2', 'ParseLinks', 'AlertService', 'paginationConstants', 'pagingParams'];
 
-    function Car2Controller(Car2, ParseLinks, AlertService, paginationConstants) {
+    function Car2Controller($state, Car2, ParseLinks, AlertService, paginationConstants, pagingParams) {
 
         var vm = this;
 
-        vm.car2S = [];
         vm.loadPage = loadPage;
+        vm.predicate = pagingParams.predicate;
+        vm.reverse = pagingParams.ascending;
+        vm.transition = transition;
         vm.itemsPerPage = paginationConstants.itemsPerPage;
-        vm.page = 0;
-        vm.links = {
-            last: 0
-        };
-        vm.predicate = 'id';
-        vm.reset = reset;
-        vm.reverse = true;
 
         loadAll();
 
         function loadAll () {
             Car2.query({
-                page: vm.page,
+                page: pagingParams.page - 1,
                 size: vm.itemsPerPage,
                 sort: sort()
             }, onSuccess, onError);
@@ -37,29 +32,29 @@
                 }
                 return result;
             }
-
             function onSuccess(data, headers) {
                 vm.links = ParseLinks.parse(headers('link'));
                 vm.totalItems = headers('X-Total-Count');
-                for (var i = 0; i < data.length; i++) {
-                    vm.car2S.push(data[i]);
-                }
+                vm.queryCount = vm.totalItems;
+                vm.car2S = data;
+                vm.page = pagingParams.page;
             }
-
             function onError(error) {
                 AlertService.error(error.data.message);
             }
         }
 
-        function reset () {
-            vm.page = 0;
-            vm.car2S = [];
-            loadAll();
-        }
-
         function loadPage(page) {
             vm.page = page;
-            loadAll();
+            vm.transition();
+        }
+
+        function transition() {
+            $state.transitionTo($state.$current, {
+                page: vm.page,
+                sort: vm.predicate + ',' + (vm.reverse ? 'asc' : 'desc'),
+                search: vm.currentSearch
+            });
         }
     }
 })();

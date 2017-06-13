@@ -1,5 +1,5 @@
 
-<form name="editForm" role="form" novalidate ng-submit="vm.save()">
+<form name="editForm" role="form" novalidate ng-submit="vm.save()" show-validation>
 
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
@@ -19,16 +19,28 @@
                     ng-model="vm.car2.name"
                     />
         </div>
+        <div class="form-group">
+            <label class="control-label" for="field_description">Description</label>
+            <input type="text" class="form-control" name="description" id="field_description"
+                    ng-model="vm.car2.description"
+                    ng-maxlength="2000"/>
+            <div ng-show="editForm.description.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.description.$error.maxlength">
+                    This field cannot be longer than 2000 characters.
+                </p>
+            </div>
+        </div>
 
         <div class="form-group">
             <label for="field_owner2">Owner 2</label>
-            <select class="form-control" id="field_owner2" name="owner2" ng-model="vm.car2.owner2" ng-options="owner2 as owner2.id for owner2 in vm.owner2s track by owner2.id">
+            <select class="form-control" id="field_owner2" name="owner2" ng-model="vm.car2.owner2Id" ng-options="owner2.id as owner2.id for owner2 in vm.owner2s"            >
                 <option value=""></option>
             </select>
         </div>
         <div class="form-group">
             <label for="field_driver2">Driver 2</label>
-            <select class="form-control" id="field_driver2" name="driver2" ng-model="vm.car2.driver2" ng-options="owner2 as owner2.id for owner2 in vm.owner2s track by owner2.id">
+            <select class="form-control" id="field_driver2" name="driver2" ng-model="vm.car2.driver2Id" ng-options="owner2.id as owner2.id for owner2 in vm.owner2s"            >
                 <option value=""></option>
             </select>
         </div>

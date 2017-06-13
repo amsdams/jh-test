@@ -4,6 +4,9 @@ import com.mycompany.myapp.TestApp;
 
 import com.mycompany.myapp.domain.Car1;
 import com.mycompany.myapp.repository.Car1Repository;
+import com.mycompany.myapp.service.Car1Service;
+import com.mycompany.myapp.service.dto.Car1DTO;
+import com.mycompany.myapp.service.mapper.Car1Mapper;
 import com.mycompany.myapp.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
@@ -40,8 +43,17 @@ public class Car1ResourceIntTest {
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
+    private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
+    private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
+
     @Autowired
     private Car1Repository car1Repository;
+
+    @Autowired
+    private Car1Mapper car1Mapper;
+
+    @Autowired
+    private Car1Service car1Service;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -62,7 +74,7 @@ public class Car1ResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Car1Resource car1Resource = new Car1Resource(car1Repository);
+        Car1Resource car1Resource = new Car1Resource(car1Service);
         this.restCar1MockMvc = MockMvcBuilders.standaloneSetup(car1Resource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -77,7 +89,8 @@ public class Car1ResourceIntTest {
      */
     public static Car1 createEntity(EntityManager em) {
         Car1 car1 = new Car1()
-            .name(DEFAULT_NAME);
+            .name(DEFAULT_NAME)
+            .description(DEFAULT_DESCRIPTION);
         return car1;
     }
 
@@ -92,9 +105,10 @@ public class Car1ResourceIntTest {
         int databaseSizeBeforeCreate = car1Repository.findAll().size();
 
         // Create the Car1
+        Car1DTO car1DTO = car1Mapper.toDto(car1);
         restCar1MockMvc.perform(post("/api/car-1-s")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(car1)))
+            .content(TestUtil.convertObjectToJsonBytes(car1DTO)))
             .andExpect(status().isCreated());
 
         // Validate the Car1 in the database
@@ -102,6 +116,7 @@ public class Car1ResourceIntTest {
         assertThat(car1List).hasSize(databaseSizeBeforeCreate + 1);
         Car1 testCar1 = car1List.get(car1List.size() - 1);
         assertThat(testCar1.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testCar1.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
     }
 
     @Test
@@ -111,11 +126,12 @@ public class Car1ResourceIntTest {
 
         // Create the Car1 with an existing ID
         car1.setId(1L);
+        Car1DTO car1DTO = car1Mapper.toDto(car1);
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restCar1MockMvc.perform(post("/api/car-1-s")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(car1)))
+            .content(TestUtil.convertObjectToJsonBytes(car1DTO)))
             .andExpect(status().isBadRequest());
 
         // Validate the Alice in the database
@@ -134,7 +150,8 @@ public class Car1ResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(car1.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())));
     }
 
     @Test
@@ -148,7 +165,8 @@ public class Car1ResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(car1.getId().intValue()))
-            .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()));
+            .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
+            .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()));
     }
 
     @Test
@@ -169,11 +187,13 @@ public class Car1ResourceIntTest {
         // Update the car1
         Car1 updatedCar1 = car1Repository.findOne(car1.getId());
         updatedCar1
-            .name(UPDATED_NAME);
+            .name(UPDATED_NAME)
+            .description(UPDATED_DESCRIPTION);
+        Car1DTO car1DTO = car1Mapper.toDto(updatedCar1);
 
         restCar1MockMvc.perform(put("/api/car-1-s")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(updatedCar1)))
+            .content(TestUtil.convertObjectToJsonBytes(car1DTO)))
             .andExpect(status().isOk());
 
         // Validate the Car1 in the database
@@ -181,6 +201,7 @@ public class Car1ResourceIntTest {
         assertThat(car1List).hasSize(databaseSizeBeforeUpdate);
         Car1 testCar1 = car1List.get(car1List.size() - 1);
         assertThat(testCar1.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testCar1.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
     }
 
     @Test
@@ -189,11 +210,12 @@ public class Car1ResourceIntTest {
         int databaseSizeBeforeUpdate = car1Repository.findAll().size();
 
         // Create the Car1
+        Car1DTO car1DTO = car1Mapper.toDto(car1);
 
         // If the entity doesn't have an ID, it will be created instead of just being updated
         restCar1MockMvc.perform(put("/api/car-1-s")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(car1)))
+            .content(TestUtil.convertObjectToJsonBytes(car1DTO)))
             .andExpect(status().isCreated());
 
         // Validate the Car1 in the database
@@ -231,5 +253,28 @@ public class Car1ResourceIntTest {
         assertThat(car11).isNotEqualTo(car12);
         car11.setId(null);
         assertThat(car11).isNotEqualTo(car12);
+    }
+
+    @Test
+    @Transactional
+    public void dtoEqualsVerifier() throws Exception {
+        TestUtil.equalsVerifier(Car1DTO.class);
+        Car1DTO car1DTO1 = new Car1DTO();
+        car1DTO1.setId(1L);
+        Car1DTO car1DTO2 = new Car1DTO();
+        assertThat(car1DTO1).isNotEqualTo(car1DTO2);
+        car1DTO2.setId(car1DTO1.getId());
+        assertThat(car1DTO1).isEqualTo(car1DTO2);
+        car1DTO2.setId(2L);
+        assertThat(car1DTO1).isNotEqualTo(car1DTO2);
+        car1DTO1.setId(null);
+        assertThat(car1DTO1).isNotEqualTo(car1DTO2);
+    }
+
+    @Test
+    @Transactional
+    public void testEntityFromId() {
+        assertThat(car1Mapper.fromId(42L).getId()).isEqualTo(42);
+        assertThat(car1Mapper.fromId(null)).isNull();
     }
 }

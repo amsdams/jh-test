@@ -2,6 +2,7 @@ package com.mycompany.myapp.domain;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +24,10 @@ public class Owner5 implements Serializable {
 
     @Column(name = "name")
     private String name;
+
+    @Size(max = 2000)
+    @Column(name = "description", length = 2000)
+    private String description;
 
     @ManyToMany
     @JoinTable(name = "owner5_car5",
@@ -49,6 +54,19 @@ public class Owner5 implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Owner5 description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Set<Car5> getCar5S() {
@@ -101,6 +119,7 @@ public class Owner5 implements Serializable {
         return "Owner5{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
+            ", description='" + getDescription() + "'" +
             "}";
     }
 }

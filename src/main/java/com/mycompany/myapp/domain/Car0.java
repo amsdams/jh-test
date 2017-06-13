@@ -2,6 +2,7 @@ package com.mycompany.myapp.domain;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -21,6 +22,10 @@ public class Car0 implements Serializable {
 
     @Column(name = "name")
     private String name;
+
+    @Size(max = 2000)
+    @Column(name = "description", length = 2000)
+    private String description;
 
     @ManyToOne
     private Owner0 owner0;
@@ -44,6 +49,19 @@ public class Car0 implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Car0 description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Owner0 getOwner0() {
@@ -84,6 +102,7 @@ public class Car0 implements Serializable {
         return "Car0{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
+            ", description='" + getDescription() + "'" +
             "}";
     }
 }

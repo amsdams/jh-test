@@ -15,10 +15,10 @@
         vm.save = save;
         vm.car4s = Car4.query({filter: 'owner4-is-null'});
         $q.all([vm.owner4.$promise, vm.car4s.$promise]).then(function() {
-            if (!vm.owner4.car4 || !vm.owner4.car4.id) {
+            if (!vm.owner4.car4Id) {
                 return $q.reject();
             }
-            return Car4.get({id : vm.owner4.car4.id}).$promise;
+            return Car4.get({id : vm.owner4.car4Id}).$promise;
         }).then(function(car4) {
             vm.car4s.push(car4);
         });

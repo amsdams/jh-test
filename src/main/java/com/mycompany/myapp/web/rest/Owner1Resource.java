@@ -1,11 +1,10 @@
 package com.mycompany.myapp.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import com.mycompany.myapp.domain.Owner1;
-
-import com.mycompany.myapp.repository.Owner1Repository;
+import com.mycompany.myapp.service.Owner1Service;
 import com.mycompany.myapp.web.rest.util.HeaderUtil;
 import com.mycompany.myapp.web.rest.util.PaginationUtil;
+import com.mycompany.myapp.service.dto.Owner1DTO;
 import io.swagger.annotations.ApiParam;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
@@ -17,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -34,27 +34,27 @@ public class Owner1Resource {
 
     private static final String ENTITY_NAME = "owner1";
 
-    private final Owner1Repository owner1Repository;
+    private final Owner1Service owner1Service;
 
-    public Owner1Resource(Owner1Repository owner1Repository) {
-        this.owner1Repository = owner1Repository;
+    public Owner1Resource(Owner1Service owner1Service) {
+        this.owner1Service = owner1Service;
     }
 
     /**
      * POST  /owner-1-s : Create a new owner1.
      *
-     * @param owner1 the owner1 to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new owner1, or with status 400 (Bad Request) if the owner1 has already an ID
+     * @param owner1DTO the owner1DTO to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new owner1DTO, or with status 400 (Bad Request) if the owner1 has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/owner-1-s")
     @Timed
-    public ResponseEntity<Owner1> createOwner1(@RequestBody Owner1 owner1) throws URISyntaxException {
-        log.debug("REST request to save Owner1 : {}", owner1);
-        if (owner1.getId() != null) {
+    public ResponseEntity<Owner1DTO> createOwner1(@Valid @RequestBody Owner1DTO owner1DTO) throws URISyntaxException {
+        log.debug("REST request to save Owner1 : {}", owner1DTO);
+        if (owner1DTO.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new owner1 cannot already have an ID")).body(null);
         }
-        Owner1 result = owner1Repository.save(owner1);
+        Owner1DTO result = owner1Service.save(owner1DTO);
         return ResponseEntity.created(new URI("/api/owner-1-s/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -63,22 +63,22 @@ public class Owner1Resource {
     /**
      * PUT  /owner-1-s : Updates an existing owner1.
      *
-     * @param owner1 the owner1 to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated owner1,
-     * or with status 400 (Bad Request) if the owner1 is not valid,
-     * or with status 500 (Internal Server Error) if the owner1 couldn't be updated
+     * @param owner1DTO the owner1DTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated owner1DTO,
+     * or with status 400 (Bad Request) if the owner1DTO is not valid,
+     * or with status 500 (Internal Server Error) if the owner1DTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/owner-1-s")
     @Timed
-    public ResponseEntity<Owner1> updateOwner1(@RequestBody Owner1 owner1) throws URISyntaxException {
-        log.debug("REST request to update Owner1 : {}", owner1);
-        if (owner1.getId() == null) {
-            return createOwner1(owner1);
+    public ResponseEntity<Owner1DTO> updateOwner1(@Valid @RequestBody Owner1DTO owner1DTO) throws URISyntaxException {
+        log.debug("REST request to update Owner1 : {}", owner1DTO);
+        if (owner1DTO.getId() == null) {
+            return createOwner1(owner1DTO);
         }
-        Owner1 result = owner1Repository.save(owner1);
+        Owner1DTO result = owner1Service.save(owner1DTO);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, owner1.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, owner1DTO.getId().toString()))
             .body(result);
     }
 
@@ -90,9 +90,9 @@ public class Owner1Resource {
      */
     @GetMapping("/owner-1-s")
     @Timed
-    public ResponseEntity<List<Owner1>> getAllOwner1S(@ApiParam Pageable pageable) {
+    public ResponseEntity<List<Owner1DTO>> getAllOwner1S(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Owner1S");
-        Page<Owner1> page = owner1Repository.findAll(pageable);
+        Page<Owner1DTO> page = owner1Service.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/owner-1-s");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -100,28 +100,28 @@ public class Owner1Resource {
     /**
      * GET  /owner-1-s/:id : get the "id" owner1.
      *
-     * @param id the id of the owner1 to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the owner1, or with status 404 (Not Found)
+     * @param id the id of the owner1DTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the owner1DTO, or with status 404 (Not Found)
      */
     @GetMapping("/owner-1-s/{id}")
     @Timed
-    public ResponseEntity<Owner1> getOwner1(@PathVariable Long id) {
+    public ResponseEntity<Owner1DTO> getOwner1(@PathVariable Long id) {
         log.debug("REST request to get Owner1 : {}", id);
-        Owner1 owner1 = owner1Repository.findOne(id);
-        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(owner1));
+        Owner1DTO owner1DTO = owner1Service.findOne(id);
+        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(owner1DTO));
     }
 
     /**
      * DELETE  /owner-1-s/:id : delete the "id" owner1.
      *
-     * @param id the id of the owner1 to delete
+     * @param id the id of the owner1DTO to delete
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/owner-1-s/{id}")
     @Timed
     public ResponseEntity<Void> deleteOwner1(@PathVariable Long id) {
         log.debug("REST request to delete Owner1 : {}", id);
-        owner1Repository.delete(id);
+        owner1Service.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 }

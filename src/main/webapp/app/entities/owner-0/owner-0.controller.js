@@ -5,28 +5,23 @@
         .module('testApp')
         .controller('Owner0Controller', Owner0Controller);
 
-    Owner0Controller.$inject = ['Owner0', 'ParseLinks', 'AlertService', 'paginationConstants'];
+    Owner0Controller.$inject = ['$state', 'Owner0', 'ParseLinks', 'AlertService', 'paginationConstants', 'pagingParams'];
 
-    function Owner0Controller(Owner0, ParseLinks, AlertService, paginationConstants) {
+    function Owner0Controller($state, Owner0, ParseLinks, AlertService, paginationConstants, pagingParams) {
 
         var vm = this;
 
-        vm.owner0S = [];
         vm.loadPage = loadPage;
+        vm.predicate = pagingParams.predicate;
+        vm.reverse = pagingParams.ascending;
+        vm.transition = transition;
         vm.itemsPerPage = paginationConstants.itemsPerPage;
-        vm.page = 0;
-        vm.links = {
-            last: 0
-        };
-        vm.predicate = 'id';
-        vm.reset = reset;
-        vm.reverse = true;
 
         loadAll();
 
         function loadAll () {
             Owner0.query({
-                page: vm.page,
+                page: pagingParams.page - 1,
                 size: vm.itemsPerPage,
                 sort: sort()
             }, onSuccess, onError);
@@ -37,29 +32,29 @@
                 }
                 return result;
             }
-
             function onSuccess(data, headers) {
                 vm.links = ParseLinks.parse(headers('link'));
                 vm.totalItems = headers('X-Total-Count');
-                for (var i = 0; i < data.length; i++) {
-                    vm.owner0S.push(data[i]);
-                }
+                vm.queryCount = vm.totalItems;
+                vm.owner0S = data;
+                vm.page = pagingParams.page;
             }
-
             function onError(error) {
                 AlertService.error(error.data.message);
             }
         }
 
-        function reset () {
-            vm.page = 0;
-            vm.owner0S = [];
-            loadAll();
-        }
-
         function loadPage(page) {
             vm.page = page;
-            loadAll();
+            vm.transition();
+        }
+
+        function transition() {
+            $state.transitionTo($state.$current, {
+                page: vm.page,
+                sort: vm.predicate + ',' + (vm.reverse ? 'asc' : 'desc'),
+                search: vm.currentSearch
+            });
         }
     }
 })();

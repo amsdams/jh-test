@@ -18,11 +18,19 @@
         {
             "fieldName": "name",
             "fieldType": "String"
+        },
+        {
+            "fieldName": "description",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "maxlength"
+            ],
+            "fieldValidateRulesMaxlength": 2000
         }
     ],
     "changelogDate": "20170612184656",
     "entityTableName": "car_2",
-    "dto": "no",
-    "pagination": "infinite-scroll",
-    "service": "no"
+    "dto": "mapstruct",
+    "pagination": "pager",
+    "service": "serviceImpl"
 }

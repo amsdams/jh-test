@@ -1,16 +1,19 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
 
 /**
- * A Owner0.
+ * Owner (1) <-----> (*) Car
  */
+@ApiModel(description = "Owner (1) <-----> (*) Car")
 @Entity
 @Table(name = "owner_0")
 public class Owner0 implements Serializable {
@@ -24,6 +27,10 @@ public class Owner0 implements Serializable {
 
     @Column(name = "name")
     private String name;
+
+    @Size(max = 2000)
+    @Column(name = "description", length = 2000)
+    private String description;
 
     @OneToMany(mappedBy = "owner0")
     @JsonIgnore
@@ -48,6 +55,19 @@ public class Owner0 implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Owner0 description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Set<Car0> getCar0S() {
@@ -100,6 +120,7 @@ public class Owner0 implements Serializable {
         return "Owner0{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
+            ", description='" + getDescription() + "'" +
             "}";
     }
 }

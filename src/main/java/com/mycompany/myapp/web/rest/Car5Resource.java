@@ -1,11 +1,10 @@
 package com.mycompany.myapp.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import com.mycompany.myapp.domain.Car5;
-
-import com.mycompany.myapp.repository.Car5Repository;
+import com.mycompany.myapp.service.Car5Service;
 import com.mycompany.myapp.web.rest.util.HeaderUtil;
 import com.mycompany.myapp.web.rest.util.PaginationUtil;
+import com.mycompany.myapp.service.dto.Car5DTO;
 import io.swagger.annotations.ApiParam;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
@@ -17,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -34,27 +34,27 @@ public class Car5Resource {
 
     private static final String ENTITY_NAME = "car5";
 
-    private final Car5Repository car5Repository;
+    private final Car5Service car5Service;
 
-    public Car5Resource(Car5Repository car5Repository) {
-        this.car5Repository = car5Repository;
+    public Car5Resource(Car5Service car5Service) {
+        this.car5Service = car5Service;
     }
 
     /**
      * POST  /car-5-s : Create a new car5.
      *
-     * @param car5 the car5 to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new car5, or with status 400 (Bad Request) if the car5 has already an ID
+     * @param car5DTO the car5DTO to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new car5DTO, or with status 400 (Bad Request) if the car5 has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/car-5-s")
     @Timed
-    public ResponseEntity<Car5> createCar5(@RequestBody Car5 car5) throws URISyntaxException {
-        log.debug("REST request to save Car5 : {}", car5);
-        if (car5.getId() != null) {
+    public ResponseEntity<Car5DTO> createCar5(@Valid @RequestBody Car5DTO car5DTO) throws URISyntaxException {
+        log.debug("REST request to save Car5 : {}", car5DTO);
+        if (car5DTO.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new car5 cannot already have an ID")).body(null);
         }
-        Car5 result = car5Repository.save(car5);
+        Car5DTO result = car5Service.save(car5DTO);
         return ResponseEntity.created(new URI("/api/car-5-s/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -63,22 +63,22 @@ public class Car5Resource {
     /**
      * PUT  /car-5-s : Updates an existing car5.
      *
-     * @param car5 the car5 to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated car5,
-     * or with status 400 (Bad Request) if the car5 is not valid,
-     * or with status 500 (Internal Server Error) if the car5 couldn't be updated
+     * @param car5DTO the car5DTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated car5DTO,
+     * or with status 400 (Bad Request) if the car5DTO is not valid,
+     * or with status 500 (Internal Server Error) if the car5DTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/car-5-s")
     @Timed
-    public ResponseEntity<Car5> updateCar5(@RequestBody Car5 car5) throws URISyntaxException {
-        log.debug("REST request to update Car5 : {}", car5);
-        if (car5.getId() == null) {
-            return createCar5(car5);
+    public ResponseEntity<Car5DTO> updateCar5(@Valid @RequestBody Car5DTO car5DTO) throws URISyntaxException {
+        log.debug("REST request to update Car5 : {}", car5DTO);
+        if (car5DTO.getId() == null) {
+            return createCar5(car5DTO);
         }
-        Car5 result = car5Repository.save(car5);
+        Car5DTO result = car5Service.save(car5DTO);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, car5.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, car5DTO.getId().toString()))
             .body(result);
     }
 
@@ -90,9 +90,9 @@ public class Car5Resource {
      */
     @GetMapping("/car-5-s")
     @Timed
-    public ResponseEntity<List<Car5>> getAllCar5S(@ApiParam Pageable pageable) {
+    public ResponseEntity<List<Car5DTO>> getAllCar5S(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Car5S");
-        Page<Car5> page = car5Repository.findAll(pageable);
+        Page<Car5DTO> page = car5Service.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/car-5-s");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -100,28 +100,28 @@ public class Car5Resource {
     /**
      * GET  /car-5-s/:id : get the "id" car5.
      *
-     * @param id the id of the car5 to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the car5, or with status 404 (Not Found)
+     * @param id the id of the car5DTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the car5DTO, or with status 404 (Not Found)
      */
     @GetMapping("/car-5-s/{id}")
     @Timed
-    public ResponseEntity<Car5> getCar5(@PathVariable Long id) {
+    public ResponseEntity<Car5DTO> getCar5(@PathVariable Long id) {
         log.debug("REST request to get Car5 : {}", id);
-        Car5 car5 = car5Repository.findOne(id);
-        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(car5));
+        Car5DTO car5DTO = car5Service.findOne(id);
+        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(car5DTO));
     }
 
     /**
      * DELETE  /car-5-s/:id : delete the "id" car5.
      *
-     * @param id the id of the car5 to delete
+     * @param id the id of the car5DTO to delete
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/car-5-s/{id}")
     @Timed
     public ResponseEntity<Void> deleteCar5(@PathVariable Long id) {
         log.debug("REST request to delete Car5 : {}", id);
-        car5Repository.delete(id);
+        car5Service.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 }

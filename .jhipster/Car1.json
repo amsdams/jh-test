@@ -5,18 +5,26 @@
             "relationshipType": "many-to-one",
             "relationshipName": "owner1",
             "otherEntityName": "owner1",
-            "otherEntityField": "id"
+            "otherEntityField": "name"
         }
     ],
     "fields": [
         {
             "fieldName": "name",
             "fieldType": "String"
+        },
+        {
+            "fieldName": "description",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "maxlength"
+            ],
+            "fieldValidateRulesMaxlength": 2000
         }
     ],
     "changelogDate": "20170612184654",
     "entityTableName": "car_1",
-    "dto": "no",
-    "pagination": "infinite-scroll",
-    "service": "no"
+    "dto": "mapstruct",
+    "pagination": "pager",
+    "service": "serviceImpl"
 }

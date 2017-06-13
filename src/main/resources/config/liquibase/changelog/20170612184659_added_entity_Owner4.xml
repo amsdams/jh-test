@@ -24,6 +24,10 @@
             <column name="name" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
+
+            <column name="description" type="varchar(2000)">
+                <constraints nullable="true" />
+            </column>
             <column name="car4_id" type="bigint">
                 <constraints unique="true" nullable="true" />
             </column>

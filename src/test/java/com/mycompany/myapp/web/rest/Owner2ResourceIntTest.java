@@ -4,6 +4,9 @@ import com.mycompany.myapp.TestApp;
 
 import com.mycompany.myapp.domain.Owner2;
 import com.mycompany.myapp.repository.Owner2Repository;
+import com.mycompany.myapp.service.Owner2Service;
+import com.mycompany.myapp.service.dto.Owner2DTO;
+import com.mycompany.myapp.service.mapper.Owner2Mapper;
 import com.mycompany.myapp.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
@@ -40,8 +43,17 @@ public class Owner2ResourceIntTest {
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
+    private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
+    private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
+
     @Autowired
     private Owner2Repository owner2Repository;
+
+    @Autowired
+    private Owner2Mapper owner2Mapper;
+
+    @Autowired
+    private Owner2Service owner2Service;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -62,7 +74,7 @@ public class Owner2ResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Owner2Resource owner2Resource = new Owner2Resource(owner2Repository);
+        Owner2Resource owner2Resource = new Owner2Resource(owner2Service);
         this.restOwner2MockMvc = MockMvcBuilders.standaloneSetup(owner2Resource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -77,7 +89,8 @@ public class Owner2ResourceIntTest {
      */
     public static Owner2 createEntity(EntityManager em) {
         Owner2 owner2 = new Owner2()
-            .name(DEFAULT_NAME);
+            .name(DEFAULT_NAME)
+            .description(DEFAULT_DESCRIPTION);
         return owner2;
     }
 
@@ -92,9 +105,10 @@ public class Owner2ResourceIntTest {
         int databaseSizeBeforeCreate = owner2Repository.findAll().size();
 
         // Create the Owner2
+        Owner2DTO owner2DTO = owner2Mapper.toDto(owner2);
         restOwner2MockMvc.perform(post("/api/owner-2-s")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(owner2)))
+            .content(TestUtil.convertObjectToJsonBytes(owner2DTO)))
             .andExpect(status().isCreated());
 
         // Validate the Owner2 in the database
@@ -102,6 +116,7 @@ public class Owner2ResourceIntTest {
         assertThat(owner2List).hasSize(databaseSizeBeforeCreate + 1);
         Owner2 testOwner2 = owner2List.get(owner2List.size() - 1);
         assertThat(testOwner2.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testOwner2.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
     }
 
     @Test
@@ -111,11 +126,12 @@ public class Owner2ResourceIntTest {
 
         // Create the Owner2 with an existing ID
         owner2.setId(1L);
+        Owner2DTO owner2DTO = owner2Mapper.toDto(owner2);
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restOwner2MockMvc.perform(post("/api/owner-2-s")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(owner2)))
+            .content(TestUtil.convertObjectToJsonBytes(owner2DTO)))
             .andExpect(status().isBadRequest());
 
         // Validate the Alice in the database
@@ -134,7 +150,8 @@ public class Owner2ResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(owner2.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())));
     }
 
     @Test
@@ -148,7 +165,8 @@ public class Owner2ResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(owner2.getId().intValue()))
-            .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()));
+            .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
+            .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()));
     }
 
     @Test
@@ -169,11 +187,13 @@ public class Owner2ResourceIntTest {
         // Update the owner2
         Owner2 updatedOwner2 = owner2Repository.findOne(owner2.getId());
         updatedOwner2
-            .name(UPDATED_NAME);
+            .name(UPDATED_NAME)
+            .description(UPDATED_DESCRIPTION);
+        Owner2DTO owner2DTO = owner2Mapper.toDto(updatedOwner2);
 
         restOwner2MockMvc.perform(put("/api/owner-2-s")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(updatedOwner2)))
+            .content(TestUtil.convertObjectToJsonBytes(owner2DTO)))
             .andExpect(status().isOk());
 
         // Validate the Owner2 in the database
@@ -181,6 +201,7 @@ public class Owner2ResourceIntTest {
         assertThat(owner2List).hasSize(databaseSizeBeforeUpdate);
         Owner2 testOwner2 = owner2List.get(owner2List.size() - 1);
         assertThat(testOwner2.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testOwner2.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
     }
 
     @Test
@@ -189,11 +210,12 @@ public class Owner2ResourceIntTest {
         int databaseSizeBeforeUpdate = owner2Repository.findAll().size();
 
         // Create the Owner2
+        Owner2DTO owner2DTO = owner2Mapper.toDto(owner2);
 
         // If the entity doesn't have an ID, it will be created instead of just being updated
         restOwner2MockMvc.perform(put("/api/owner-2-s")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(owner2)))
+            .content(TestUtil.convertObjectToJsonBytes(owner2DTO)))
             .andExpect(status().isCreated());
 
         // Validate the Owner2 in the database
@@ -231,5 +253,28 @@ public class Owner2ResourceIntTest {
         assertThat(owner21).isNotEqualTo(owner22);
         owner21.setId(null);
         assertThat(owner21).isNotEqualTo(owner22);
+    }
+
+    @Test
+    @Transactional
+    public void dtoEqualsVerifier() throws Exception {
+        TestUtil.equalsVerifier(Owner2DTO.class);
+        Owner2DTO owner2DTO1 = new Owner2DTO();
+        owner2DTO1.setId(1L);
+        Owner2DTO owner2DTO2 = new Owner2DTO();
+        assertThat(owner2DTO1).isNotEqualTo(owner2DTO2);
+        owner2DTO2.setId(owner2DTO1.getId());
+        assertThat(owner2DTO1).isEqualTo(owner2DTO2);
+        owner2DTO2.setId(2L);
+        assertThat(owner2DTO1).isNotEqualTo(owner2DTO2);
+        owner2DTO1.setId(null);
+        assertThat(owner2DTO1).isNotEqualTo(owner2DTO2);
+    }
+
+    @Test
+    @Transactional
+    public void testEntityFromId() {
+        assertThat(owner2Mapper.fromId(42L).getId()).isEqualTo(42);
+        assertThat(owner2Mapper.fromId(null)).isNull();
     }
 }

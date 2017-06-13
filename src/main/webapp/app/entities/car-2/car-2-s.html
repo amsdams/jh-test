@@ -17,23 +17,25 @@
     <div class="table-responsive">
         <table class="jh-table table table-striped">
             <thead>
-                <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.reset()">
+                <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.transition()">
                     <th jh-sort-by="id"><span>ID</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="name"><span>Name</span> <span class="glyphicon glyphicon-sort"></span></th>
-                    <th jh-sort-by="owner2.id"><span>Owner 2</span> <span class="glyphicon glyphicon-sort"></span></th>
-                    <th jh-sort-by="driver2.id"><span>Driver 2</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="description"><span>Description</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="owner2Id"><span>Owner 2</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="driver2Id"><span>Driver 2</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th></th>
                 </tr>
             </thead>
-            <tbody infinite-scroll="vm.loadPage(vm.page + 1)" infinite-scroll-disabled="vm.page >= vm.links['last']">
+            <tbody>
                 <tr ng-repeat="car2 in vm.car2S track by car2.id">
                     <td><a ui-sref="car-2-detail({id:car2.id})">{{car2.id}}</a></td>
                     <td>{{car2.name}}</td>
+                    <td>{{car2.description}}</td>
                     <td>
-                        <a ui-sref="owner-2-detail({id:car2.owner2.id})">{{car2.owner2.id}}</a>
+                        <a ui-sref="owner-2-detail({id:car2.owner2Id})">{{car2.owner2Id}}</a>
                     </td>
                     <td>
-                        <a ui-sref="owner-2-detail({id:car2.driver2.id})">{{car2.driver2.id}}</a>
+                        <a ui-sref="owner-2-detail({id:car2.driver2Id})">{{car2.driver2Id}}</a>
                     </td>
                     <td class="text-right">
                         <div class="btn-group flex-btn-group-container">
@@ -61,4 +63,8 @@
             </tbody>
         </table>
     </div>
+    <div class="text-center">
+        <jhi-item-count page="vm.page" total="vm.queryCount" items-per-page="vm.itemsPerPage"></jhi-item-count>
+    </div>
+    <uib-pager total-items="vm.totalItems" ng-model="vm.page" ng-change="vm.transition()"></uib-pager>
 </div>
