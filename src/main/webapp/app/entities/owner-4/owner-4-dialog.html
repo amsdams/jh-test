@@ -34,7 +34,7 @@
 
         <div class="form-group">
             <label for="field_car4">Car 4</label>
-            <select class="form-control" id="field_car4" name="car4" ng-model="vm.owner4.car4Id" ng-options="car4.id as car4.id for car4 in vm.car4s | orderBy:'id'">
+            <select class="form-control" id="field_car4" name="car4" ng-model="vm.owner4.car4Id" ng-options="car4.id as car4.name for car4 in vm.car4s | orderBy:'id'">
                 <option value=""></option>
             </select>
         </div>

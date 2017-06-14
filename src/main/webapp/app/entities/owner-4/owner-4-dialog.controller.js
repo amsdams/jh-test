@@ -13,7 +13,7 @@
         vm.owner4 = entity;
         vm.clear = clear;
         vm.save = save;
-        vm.car4s = Car4.query({filter: 'owner4-is-null'});
+        vm.car4s = Car4.query({filter: 'owner4-is-null',size:2000});
         $q.all([vm.owner4.$promise, vm.car4s.$promise]).then(function() {
             if (!vm.owner4.car4Id) {
                 return $q.reject();

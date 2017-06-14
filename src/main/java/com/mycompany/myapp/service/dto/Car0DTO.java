@@ -21,6 +21,8 @@ public class Car0DTO implements Serializable {
 
     private Long owner0Id;
 
+    private String owner0Name;
+
     public Long getId() {
         return id;
     }
@@ -51,6 +53,14 @@ public class Car0DTO implements Serializable {
 
     public void setOwner0Id(Long owner0Id) {
         this.owner0Id = owner0Id;
+    }
+
+    public String getOwner0Name() {
+        return owner0Name;
+    }
+
+    public void setOwner0Name(String owner0Name) {
+        this.owner0Name = owner0Name;
     }
 
     @Override

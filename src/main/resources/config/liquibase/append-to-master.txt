@@ -1,0 +1,5 @@
+
+<include file="classpath:config/liquibase/changelog/20170612184651_added_data_Owner0.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184654_added_data_Owner1.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184659_added_data_Owner4.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170612184703_added_data_Owner5.xml" relativeToChangelogFile="false"/>

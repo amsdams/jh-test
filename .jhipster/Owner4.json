@@ -5,7 +5,7 @@
             "relationshipType": "one-to-one",
             "relationshipName": "car4",
             "otherEntityName": "car4",
-            "otherEntityField": "id",
+            "otherEntityField": "name",
             "ownerSide": true,
             "otherEntityRelationshipName": "owner4"
         }

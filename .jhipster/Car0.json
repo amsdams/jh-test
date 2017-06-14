@@ -5,7 +5,7 @@
             "relationshipType": "many-to-one",
             "relationshipName": "owner0",
             "otherEntityName": "owner0",
-            "otherEntityField": "id"
+            "otherEntityField": "name"
         }
     ],
     "fields": [

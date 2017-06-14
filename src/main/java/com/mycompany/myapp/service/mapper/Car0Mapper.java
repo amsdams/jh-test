@@ -12,6 +12,7 @@ import org.mapstruct.*;
 public interface Car0Mapper extends EntityMapper <Car0DTO, Car0> {
 
     @Mapping(source = "owner0.id", target = "owner0Id")
+    @Mapping(source = "owner0.name", target = "owner0Name")
     Car0DTO toDto(Car0 car0); 
 
     @Mapping(source = "owner0Id", target = "owner0")

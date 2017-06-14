@@ -11,7 +11,7 @@ entity Car0 {
 
 
 relationship OneToMany {
-	Owner0{car0(name)} to Car0{owner0}
+	Owner0{car0} to Car0{owner0(name)}
 }
 /*Owner (1) <----- (*) Car*/
 
@@ -44,7 +44,7 @@ relationship OneToMany {
 }
 
 relationship OneToMany {
-	Owner2{drivedCar2} to Car2{driver2}
+	Owner2{drivedCar2(name)} to Car2{driver2}
 }
 
 entity Owner3{
@@ -72,7 +72,7 @@ entity Car4{
 }
 
 relationship OneToOne {
-	Owner4{car4} to Car4
+	Owner4{car4(name)} to Car4
 }
 
 entity Owner5{
