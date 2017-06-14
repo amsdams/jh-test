@@ -5,6 +5,7 @@ import com.mycompany.myapp.TestApp;
 import com.mycompany.myapp.domain.Owner3;
 import com.mycompany.myapp.repository.Owner3Repository;
 import com.mycompany.myapp.service.Owner3Service;
+import com.mycompany.myapp.repository.search.Owner3SearchRepository;
 import com.mycompany.myapp.service.dto.Owner3DTO;
 import com.mycompany.myapp.service.mapper.Owner3Mapper;
 import com.mycompany.myapp.web.rest.errors.ExceptionTranslator;
@@ -56,6 +57,9 @@ public class Owner3ResourceIntTest {
     private Owner3Service owner3Service;
 
     @Autowired
+    private Owner3SearchRepository owner3SearchRepository;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -96,6 +100,7 @@ public class Owner3ResourceIntTest {
 
     @Before
     public void initTest() {
+        owner3SearchRepository.deleteAll();
         owner3 = createEntity(em);
     }
 
@@ -117,6 +122,10 @@ public class Owner3ResourceIntTest {
         Owner3 testOwner3 = owner3List.get(owner3List.size() - 1);
         assertThat(testOwner3.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testOwner3.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
+
+        // Validate the Owner3 in Elasticsearch
+        Owner3 owner3Es = owner3SearchRepository.findOne(testOwner3.getId());
+        assertThat(owner3Es).isEqualToComparingFieldByField(testOwner3);
     }
 
     @Test
@@ -182,6 +191,7 @@ public class Owner3ResourceIntTest {
     public void updateOwner3() throws Exception {
         // Initialize the database
         owner3Repository.saveAndFlush(owner3);
+        owner3SearchRepository.save(owner3);
         int databaseSizeBeforeUpdate = owner3Repository.findAll().size();
 
         // Update the owner3
@@ -202,6 +212,10 @@ public class Owner3ResourceIntTest {
         Owner3 testOwner3 = owner3List.get(owner3List.size() - 1);
         assertThat(testOwner3.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testOwner3.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
+
+        // Validate the Owner3 in Elasticsearch
+        Owner3 owner3Es = owner3SearchRepository.findOne(testOwner3.getId());
+        assertThat(owner3Es).isEqualToComparingFieldByField(testOwner3);
     }
 
     @Test
@@ -228,6 +242,7 @@ public class Owner3ResourceIntTest {
     public void deleteOwner3() throws Exception {
         // Initialize the database
         owner3Repository.saveAndFlush(owner3);
+        owner3SearchRepository.save(owner3);
         int databaseSizeBeforeDelete = owner3Repository.findAll().size();
 
         // Get the owner3
@@ -235,9 +250,29 @@ public class Owner3ResourceIntTest {
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
+        // Validate Elasticsearch is empty
+        boolean owner3ExistsInEs = owner3SearchRepository.exists(owner3.getId());
+        assertThat(owner3ExistsInEs).isFalse();
+
         // Validate the database is empty
         List<Owner3> owner3List = owner3Repository.findAll();
         assertThat(owner3List).hasSize(databaseSizeBeforeDelete - 1);
+    }
+
+    @Test
+    @Transactional
+    public void searchOwner3() throws Exception {
+        // Initialize the database
+        owner3Repository.saveAndFlush(owner3);
+        owner3SearchRepository.save(owner3);
+
+        // Search the owner3
+        restOwner3MockMvc.perform(get("/api/_search/owner-3-s?query=id:" + owner3.getId()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(owner3.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())));
     }
 
     @Test

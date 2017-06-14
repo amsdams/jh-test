@@ -1,5 +1,8 @@
 package com.mycompany.myapp.domain;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -13,6 +16,8 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "car_3")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Document(indexName = "car3")
 public class Car3 implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,6 +35,7 @@ public class Car3 implements Serializable {
     private String description;
 
     @ManyToMany
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JoinTable(name = "car3_owner3",
                joinColumns = @JoinColumn(name="car3s_id", referencedColumnName="id"),
                inverseJoinColumns = @JoinColumn(name="owner3s_id", referencedColumnName="id"))

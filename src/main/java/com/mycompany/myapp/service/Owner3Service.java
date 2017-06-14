@@ -39,4 +39,14 @@ public interface Owner3Service {
      *  @param id the id of the entity
      */
     void delete(Long id);
+
+    /**
+     * Search for the owner3 corresponding to the query.
+     *
+     *  @param query the query of the search
+     *  
+     *  @param pageable the pagination information
+     *  @return the list of entities
+     */
+    Page<Owner3DTO> search(String query, Pageable pageable);
 }

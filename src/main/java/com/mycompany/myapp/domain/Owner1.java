@@ -1,6 +1,9 @@
 package com.mycompany.myapp.domain;
 
 import io.swagger.annotations.ApiModel;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -13,6 +16,8 @@ import java.util.Objects;
 @ApiModel(description = "Owner (1) <----- (*) Car")
 @Entity
 @Table(name = "owner_1")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Document(indexName = "owner1")
 public class Owner1 implements Serializable {
 
     private static final long serialVersionUID = 1L;

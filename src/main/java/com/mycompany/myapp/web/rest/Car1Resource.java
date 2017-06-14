@@ -22,6 +22,9 @@ import java.net.URISyntaxException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
+
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * REST controller for managing Car1.
@@ -124,4 +127,22 @@ public class Car1Resource {
         car1Service.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
+
+    /**
+     * SEARCH  /_search/car-1-s?query=:query : search for the car1 corresponding
+     * to the query.
+     *
+     * @param query the query of the car1 search
+     * @param pageable the pagination information
+     * @return the result of the search
+     */
+    @GetMapping("/_search/car-1-s")
+    @Timed
+    public ResponseEntity<List<Car1DTO>> searchCar1S(@RequestParam String query, @ApiParam Pageable pageable) {
+        log.debug("REST request to search for a page of Car1S for query {}", query);
+        Page<Car1DTO> page = car1Service.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/car-1-s");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
 }

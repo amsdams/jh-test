@@ -91,3 +91,4 @@ relationship ManyToMany {
 dto * with mapstruct
 service * with serviceImpl
 paginate * with pager
+search * with elasticsearch

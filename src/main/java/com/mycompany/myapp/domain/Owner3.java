@@ -1,6 +1,9 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -14,6 +17,8 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "owner_3")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Document(indexName = "owner3")
 public class Owner3 implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -32,6 +37,7 @@ public class Owner3 implements Serializable {
 
     @ManyToMany(mappedBy = "owner3S")
     @JsonIgnore
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<Car3> car3S = new HashSet<>();
 
     public Long getId() {

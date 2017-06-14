@@ -3,6 +3,7 @@ package com.mycompany.myapp.service.impl;
 import com.mycompany.myapp.service.Car1Service;
 import com.mycompany.myapp.domain.Car1;
 import com.mycompany.myapp.repository.Car1Repository;
+import com.mycompany.myapp.repository.search.Car1SearchRepository;
 import com.mycompany.myapp.service.dto.Car1DTO;
 import com.mycompany.myapp.service.mapper.Car1Mapper;
 import org.slf4j.Logger;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * Service Implementation for managing Car1.
@@ -26,9 +29,12 @@ public class Car1ServiceImpl implements Car1Service{
 
     private final Car1Mapper car1Mapper;
 
-    public Car1ServiceImpl(Car1Repository car1Repository, Car1Mapper car1Mapper) {
+    private final Car1SearchRepository car1SearchRepository;
+
+    public Car1ServiceImpl(Car1Repository car1Repository, Car1Mapper car1Mapper, Car1SearchRepository car1SearchRepository) {
         this.car1Repository = car1Repository;
         this.car1Mapper = car1Mapper;
+        this.car1SearchRepository = car1SearchRepository;
     }
 
     /**
@@ -42,7 +48,9 @@ public class Car1ServiceImpl implements Car1Service{
         log.debug("Request to save Car1 : {}", car1DTO);
         Car1 car1 = car1Mapper.toEntity(car1DTO);
         car1 = car1Repository.save(car1);
-        return car1Mapper.toDto(car1);
+        Car1DTO result = car1Mapper.toDto(car1);
+        car1SearchRepository.save(car1);
+        return result;
     }
 
     /**
@@ -82,5 +90,21 @@ public class Car1ServiceImpl implements Car1Service{
     public void delete(Long id) {
         log.debug("Request to delete Car1 : {}", id);
         car1Repository.delete(id);
+        car1SearchRepository.delete(id);
+    }
+
+    /**
+     * Search for the car1 corresponding to the query.
+     *
+     *  @param query the query of the search
+     *  @param pageable the pagination information
+     *  @return the list of entities
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Car1DTO> search(String query, Pageable pageable) {
+        log.debug("Request to search for a page of Car1S for query {}", query);
+        Page<Car1> result = car1SearchRepository.search(queryStringQuery(query), pageable);
+        return result.map(car1Mapper::toDto);
     }
 }

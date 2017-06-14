@@ -3,6 +3,7 @@ package com.mycompany.myapp.service.impl;
 import com.mycompany.myapp.service.Owner5Service;
 import com.mycompany.myapp.domain.Owner5;
 import com.mycompany.myapp.repository.Owner5Repository;
+import com.mycompany.myapp.repository.search.Owner5SearchRepository;
 import com.mycompany.myapp.service.dto.Owner5DTO;
 import com.mycompany.myapp.service.mapper.Owner5Mapper;
 import org.slf4j.Logger;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * Service Implementation for managing Owner5.
@@ -26,9 +29,12 @@ public class Owner5ServiceImpl implements Owner5Service{
 
     private final Owner5Mapper owner5Mapper;
 
-    public Owner5ServiceImpl(Owner5Repository owner5Repository, Owner5Mapper owner5Mapper) {
+    private final Owner5SearchRepository owner5SearchRepository;
+
+    public Owner5ServiceImpl(Owner5Repository owner5Repository, Owner5Mapper owner5Mapper, Owner5SearchRepository owner5SearchRepository) {
         this.owner5Repository = owner5Repository;
         this.owner5Mapper = owner5Mapper;
+        this.owner5SearchRepository = owner5SearchRepository;
     }
 
     /**
@@ -42,7 +48,9 @@ public class Owner5ServiceImpl implements Owner5Service{
         log.debug("Request to save Owner5 : {}", owner5DTO);
         Owner5 owner5 = owner5Mapper.toEntity(owner5DTO);
         owner5 = owner5Repository.save(owner5);
-        return owner5Mapper.toDto(owner5);
+        Owner5DTO result = owner5Mapper.toDto(owner5);
+        owner5SearchRepository.save(owner5);
+        return result;
     }
 
     /**
@@ -82,5 +90,21 @@ public class Owner5ServiceImpl implements Owner5Service{
     public void delete(Long id) {
         log.debug("Request to delete Owner5 : {}", id);
         owner5Repository.delete(id);
+        owner5SearchRepository.delete(id);
+    }
+
+    /**
+     * Search for the owner5 corresponding to the query.
+     *
+     *  @param query the query of the search
+     *  @param pageable the pagination information
+     *  @return the list of entities
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Owner5DTO> search(String query, Pageable pageable) {
+        log.debug("Request to search for a page of Owner5S for query {}", query);
+        Page<Owner5> result = owner5SearchRepository.search(queryStringQuery(query), pageable);
+        return result.map(owner5Mapper::toDto);
     }
 }

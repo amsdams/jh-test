@@ -5,6 +5,7 @@ import com.mycompany.myapp.TestApp;
 import com.mycompany.myapp.domain.Owner2;
 import com.mycompany.myapp.repository.Owner2Repository;
 import com.mycompany.myapp.service.Owner2Service;
+import com.mycompany.myapp.repository.search.Owner2SearchRepository;
 import com.mycompany.myapp.service.dto.Owner2DTO;
 import com.mycompany.myapp.service.mapper.Owner2Mapper;
 import com.mycompany.myapp.web.rest.errors.ExceptionTranslator;
@@ -56,6 +57,9 @@ public class Owner2ResourceIntTest {
     private Owner2Service owner2Service;
 
     @Autowired
+    private Owner2SearchRepository owner2SearchRepository;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -96,6 +100,7 @@ public class Owner2ResourceIntTest {
 
     @Before
     public void initTest() {
+        owner2SearchRepository.deleteAll();
         owner2 = createEntity(em);
     }
 
@@ -117,6 +122,10 @@ public class Owner2ResourceIntTest {
         Owner2 testOwner2 = owner2List.get(owner2List.size() - 1);
         assertThat(testOwner2.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testOwner2.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
+
+        // Validate the Owner2 in Elasticsearch
+        Owner2 owner2Es = owner2SearchRepository.findOne(testOwner2.getId());
+        assertThat(owner2Es).isEqualToComparingFieldByField(testOwner2);
     }
 
     @Test
@@ -182,6 +191,7 @@ public class Owner2ResourceIntTest {
     public void updateOwner2() throws Exception {
         // Initialize the database
         owner2Repository.saveAndFlush(owner2);
+        owner2SearchRepository.save(owner2);
         int databaseSizeBeforeUpdate = owner2Repository.findAll().size();
 
         // Update the owner2
@@ -202,6 +212,10 @@ public class Owner2ResourceIntTest {
         Owner2 testOwner2 = owner2List.get(owner2List.size() - 1);
         assertThat(testOwner2.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testOwner2.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
+
+        // Validate the Owner2 in Elasticsearch
+        Owner2 owner2Es = owner2SearchRepository.findOne(testOwner2.getId());
+        assertThat(owner2Es).isEqualToComparingFieldByField(testOwner2);
     }
 
     @Test
@@ -228,6 +242,7 @@ public class Owner2ResourceIntTest {
     public void deleteOwner2() throws Exception {
         // Initialize the database
         owner2Repository.saveAndFlush(owner2);
+        owner2SearchRepository.save(owner2);
         int databaseSizeBeforeDelete = owner2Repository.findAll().size();
 
         // Get the owner2
@@ -235,9 +250,29 @@ public class Owner2ResourceIntTest {
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
+        // Validate Elasticsearch is empty
+        boolean owner2ExistsInEs = owner2SearchRepository.exists(owner2.getId());
+        assertThat(owner2ExistsInEs).isFalse();
+
         // Validate the database is empty
         List<Owner2> owner2List = owner2Repository.findAll();
         assertThat(owner2List).hasSize(databaseSizeBeforeDelete - 1);
+    }
+
+    @Test
+    @Transactional
+    public void searchOwner2() throws Exception {
+        // Initialize the database
+        owner2Repository.saveAndFlush(owner2);
+        owner2SearchRepository.save(owner2);
+
+        // Search the owner2
+        restOwner2MockMvc.perform(get("/api/_search/owner-2-s?query=id:" + owner2.getId()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(owner2.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())));
     }
 
     @Test

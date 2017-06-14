@@ -27,5 +27,6 @@
     "entityTableName": "car_5",
     "dto": "mapstruct",
     "pagination": "pager",
-    "service": "serviceImpl"
+    "service": "serviceImpl",
+    "searchEngine": "elasticsearch"
 }

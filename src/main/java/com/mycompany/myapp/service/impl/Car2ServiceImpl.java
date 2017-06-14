@@ -3,6 +3,7 @@ package com.mycompany.myapp.service.impl;
 import com.mycompany.myapp.service.Car2Service;
 import com.mycompany.myapp.domain.Car2;
 import com.mycompany.myapp.repository.Car2Repository;
+import com.mycompany.myapp.repository.search.Car2SearchRepository;
 import com.mycompany.myapp.service.dto.Car2DTO;
 import com.mycompany.myapp.service.mapper.Car2Mapper;
 import org.slf4j.Logger;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * Service Implementation for managing Car2.
@@ -26,9 +29,12 @@ public class Car2ServiceImpl implements Car2Service{
 
     private final Car2Mapper car2Mapper;
 
-    public Car2ServiceImpl(Car2Repository car2Repository, Car2Mapper car2Mapper) {
+    private final Car2SearchRepository car2SearchRepository;
+
+    public Car2ServiceImpl(Car2Repository car2Repository, Car2Mapper car2Mapper, Car2SearchRepository car2SearchRepository) {
         this.car2Repository = car2Repository;
         this.car2Mapper = car2Mapper;
+        this.car2SearchRepository = car2SearchRepository;
     }
 
     /**
@@ -42,7 +48,9 @@ public class Car2ServiceImpl implements Car2Service{
         log.debug("Request to save Car2 : {}", car2DTO);
         Car2 car2 = car2Mapper.toEntity(car2DTO);
         car2 = car2Repository.save(car2);
-        return car2Mapper.toDto(car2);
+        Car2DTO result = car2Mapper.toDto(car2);
+        car2SearchRepository.save(car2);
+        return result;
     }
 
     /**
@@ -82,5 +90,21 @@ public class Car2ServiceImpl implements Car2Service{
     public void delete(Long id) {
         log.debug("Request to delete Car2 : {}", id);
         car2Repository.delete(id);
+        car2SearchRepository.delete(id);
+    }
+
+    /**
+     * Search for the car2 corresponding to the query.
+     *
+     *  @param query the query of the search
+     *  @param pageable the pagination information
+     *  @return the list of entities
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Car2DTO> search(String query, Pageable pageable) {
+        log.debug("Request to search for a page of Car2S for query {}", query);
+        Page<Car2> result = car2SearchRepository.search(queryStringQuery(query), pageable);
+        return result.map(car2Mapper::toDto);
     }
 }

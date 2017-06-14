@@ -5,6 +5,7 @@ import com.mycompany.myapp.TestApp;
 import com.mycompany.myapp.domain.Car5;
 import com.mycompany.myapp.repository.Car5Repository;
 import com.mycompany.myapp.service.Car5Service;
+import com.mycompany.myapp.repository.search.Car5SearchRepository;
 import com.mycompany.myapp.service.dto.Car5DTO;
 import com.mycompany.myapp.service.mapper.Car5Mapper;
 import com.mycompany.myapp.web.rest.errors.ExceptionTranslator;
@@ -56,6 +57,9 @@ public class Car5ResourceIntTest {
     private Car5Service car5Service;
 
     @Autowired
+    private Car5SearchRepository car5SearchRepository;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -96,6 +100,7 @@ public class Car5ResourceIntTest {
 
     @Before
     public void initTest() {
+        car5SearchRepository.deleteAll();
         car5 = createEntity(em);
     }
 
@@ -117,6 +122,10 @@ public class Car5ResourceIntTest {
         Car5 testCar5 = car5List.get(car5List.size() - 1);
         assertThat(testCar5.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testCar5.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
+
+        // Validate the Car5 in Elasticsearch
+        Car5 car5Es = car5SearchRepository.findOne(testCar5.getId());
+        assertThat(car5Es).isEqualToComparingFieldByField(testCar5);
     }
 
     @Test
@@ -182,6 +191,7 @@ public class Car5ResourceIntTest {
     public void updateCar5() throws Exception {
         // Initialize the database
         car5Repository.saveAndFlush(car5);
+        car5SearchRepository.save(car5);
         int databaseSizeBeforeUpdate = car5Repository.findAll().size();
 
         // Update the car5
@@ -202,6 +212,10 @@ public class Car5ResourceIntTest {
         Car5 testCar5 = car5List.get(car5List.size() - 1);
         assertThat(testCar5.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testCar5.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
+
+        // Validate the Car5 in Elasticsearch
+        Car5 car5Es = car5SearchRepository.findOne(testCar5.getId());
+        assertThat(car5Es).isEqualToComparingFieldByField(testCar5);
     }
 
     @Test
@@ -228,6 +242,7 @@ public class Car5ResourceIntTest {
     public void deleteCar5() throws Exception {
         // Initialize the database
         car5Repository.saveAndFlush(car5);
+        car5SearchRepository.save(car5);
         int databaseSizeBeforeDelete = car5Repository.findAll().size();
 
         // Get the car5
@@ -235,9 +250,29 @@ public class Car5ResourceIntTest {
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
+        // Validate Elasticsearch is empty
+        boolean car5ExistsInEs = car5SearchRepository.exists(car5.getId());
+        assertThat(car5ExistsInEs).isFalse();
+
         // Validate the database is empty
         List<Car5> car5List = car5Repository.findAll();
         assertThat(car5List).hasSize(databaseSizeBeforeDelete - 1);
+    }
+
+    @Test
+    @Transactional
+    public void searchCar5() throws Exception {
+        // Initialize the database
+        car5Repository.saveAndFlush(car5);
+        car5SearchRepository.save(car5);
+
+        // Search the car5
+        restCar5MockMvc.perform(get("/api/_search/car-5-s?query=id:" + car5.getId()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(car5.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())));
     }
 
     @Test
